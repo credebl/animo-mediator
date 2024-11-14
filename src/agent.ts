@@ -5,6 +5,7 @@ import {
   ConnectionsModule,
   DidCommMimeType,
   HttpOutboundTransport,
+  InjectionSymbols,
   InMemoryLruCache,
   MediatorModule,
   OutOfBandRole,
@@ -24,15 +25,25 @@ import { askarPostgresConfig } from './database'
 import { Logger } from './logger'
 import { StorageMessageQueueModule } from './storage/StorageMessageQueueModule'
 import { PushNotificationsFcmModule } from './push-notifications/fcm'
+import { MessagePickupRepositoryClient } from '@2060.io/message-pickup-repository-client'
+import { MessagePickupRepoModule } from './message-pickup/StorageMessageQueueModule'
+import { MessageForwardingStrategy } from '@credo-ts/core/build/modules/routing/MessageForwardingStrategy'
 
 function createModules() {
   const modules = {
-    storageModule: new StorageMessageQueueModule(),
+    // storageModule: new StorageMessageQueueModule(),
+    // storageModule: new MessagePickupRepositoryClient({
+    //   url: ""
+    // }),
+    // storageModule: new MessagePickupRepoModule({
+    //   url: "redis://127.0.0.1:6379"
+    // }),
     connections: new ConnectionsModule({
       autoAcceptConnections: true,
     }),
     mediator: new MediatorModule({
       autoAcceptMediationRequests: true,
+      messageForwardingStrategy: MessageForwardingStrategy.QueueAndLiveModeDelivery
     }),
     askar: new AskarModule({
       ariesAskar,
@@ -123,6 +134,14 @@ export async function createAgent() {
     }
     return res.send(outOfBandRecord.outOfBandInvitation.toJSON())
   })
+
+  const client = new MessagePickupRepositoryClient({
+    url: `${process.env.MESSAGE_PICKUP_REPOSITORY_URL}`,
+  })
+
+  await client.connect()
+
+  agent.dependencyManager.registerInstance(InjectionSymbols.MessagePickupRepository, client)
 
   await agent.initialize()
 
