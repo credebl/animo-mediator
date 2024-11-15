@@ -26,7 +26,6 @@ import { Logger } from './logger'
 import { StorageMessageQueueModule } from './storage/StorageMessageQueueModule'
 import { PushNotificationsFcmModule } from './push-notifications/fcm'
 import { MessagePickupRepositoryClient } from '@2060.io/message-pickup-repository-client'
-import { MessagePickupRepoModule } from './message-pickup/StorageMessageQueueModule'
 import { MessageForwardingStrategy } from '@credo-ts/core/build/modules/routing/MessageForwardingStrategy'
 
 function createModules() {
