@@ -14,10 +14,10 @@
     node-gyp-build "^4.2.1"
     ref-struct-di "^1.1.0"
 
-"@2060.io/message-pickup-repository-client@^0.0.6":
-  version "0.0.6"
-  resolved "https://registry.yarnpkg.com/@2060.io/message-pickup-repository-client/-/message-pickup-repository-client-0.0.6.tgz#6dfd5c5f147f9afc025df8d3f64e70c6e4e7c525"
-  integrity sha512-t8ZP7R8HKHNLSKGLdCMbK1fXJAxbMRlg2dfDlnPK6kbTcOAo4/n9UZkiHm9nqsnADrZboQr1zlMy5QbZj7jFDQ==
+"@2060.io/message-pickup-repository-client@^0.0.7":
+  version "0.0.7"
+  resolved "https://registry.yarnpkg.com/@2060.io/message-pickup-repository-client/-/message-pickup-repository-client-0.0.7.tgz#6a375b6dcd0f92b8ece3ec5f1805e00e1ab59507"
+  integrity sha512-YXQJ2U1zMdYdVqavUS7GYIF679p2c5UGLFVpg1+AI+UhryG8Jes/nWifktSpQ0xsrb11JqKzJm7rlPvzQCwzvw==
   dependencies:
     "@credo-ts/core" "^0.5.10"
     loglevel "^1.8.0"
