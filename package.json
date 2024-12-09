@@ -29,6 +29,7 @@
     "postinstall": "npx patch-package"
   },
   "dependencies": {
+    "@2060.io/message-pickup-repository-client": "^0.0.7",
     "@credo-ts/askar": "^0.5.0",
     "@credo-ts/core": "^0.5.0",
     "@credo-ts/node": "^0.5.0",

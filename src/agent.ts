@@ -4,6 +4,7 @@ import {
   ConnectionsModule,
   DidCommMimeType,
   HttpOutboundTransport,
+  InjectionSymbols,
   MediatorModule,
   OutOfBandRole,
   OutOfBandState,
@@ -32,15 +33,18 @@ import { askarPostgresConfig } from './database'
 import { Logger } from './logger'
 import { StorageMessageQueueModule } from './storage/StorageMessageQueueModule'
 import { PushNotificationsFcmModule } from './push-notifications/fcm'
+import { MessagePickupRepositoryClient } from '@2060.io/message-pickup-repository-client'
+import { MessageForwardingStrategy } from '@credo-ts/core/build/modules/routing/MessageForwardingStrategy'
 
 function createModules() {
   const modules = {
-    storageModule: new StorageMessageQueueModule(),
+    // storageModule: new StorageMessageQueueModule(),
     connections: new ConnectionsModule({
       autoAcceptConnections: true,
     }),
     mediator: new MediatorModule({
       autoAcceptMediationRequests: true,
+      messageForwardingStrategy: MessageForwardingStrategy.DirectDelivery
     }),
     askar: new AskarModule({
       ariesAskar,
@@ -138,6 +142,13 @@ export async function createAgent() {
   })
 
   //  app.use(express.json())
+  const client = new MessagePickupRepositoryClient({
+    url: `${process.env.MESSAGE_PICKUP_REPOSITORY_URL}`,
+  })
+
+  await client.connect()
+
+  agent.dependencyManager.registerInstance(InjectionSymbols.MessagePickupRepository, client)
 
   await agent.initialize()
 
