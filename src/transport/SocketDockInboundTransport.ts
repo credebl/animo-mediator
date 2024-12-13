@@ -2,15 +2,24 @@ import type { Express } from 'express'
 import { Agent, AgentEventTypes, AgentMessageReceivedEvent, InboundTransport } from '@credo-ts/core'
 import { SocketDockTransportSession } from './SocketDockTransportSession'
 import express from 'express'
+import createClient from 'redis'
+import { RedisService } from '../redis/redisService'
+import { Logger } from 'src/logger'
+import { LOG_LEVEL } from 'src/constants'
 
 export class SocketDockInboundTransport implements InboundTransport {
   private app: Express
-  private activeConnections: Record<string, string> = {}
+  //private activeConnections: Record<string, string> = {}
+  private redisService: RedisService
+  private logger = new Logger(LOG_LEVEL)
 
-  public constructor({ app }: { app: Express }) {
+  public constructor({ app }: { app: Express }
+  ) {
     this.app = app
 
     this.app.use(express.json())
+    this.redisService = new RedisService();
+    this.logger.info(`RedisService initialized`)
   }
 
   public async start(agent: Agent) {
@@ -21,9 +30,9 @@ export class SocketDockInboundTransport implements InboundTransport {
         throw new Error('ConnectionId is not sent from socketDock server')
       }
 
-      const socketId = this.activeConnections[connectionId]
+      const socketId = await this.redisService.getData(connectionId);
       if (!socketId) {
-        this.activeConnections[socketId] = socketId
+        await this.redisService.storeData(connectionId,connectionId);
         agent.config.logger.debug(`Saving new socketId : ${connectionId}`)
       }
 
@@ -43,7 +52,11 @@ export class SocketDockInboundTransport implements InboundTransport {
       }
 
       try {
-        const socketId = this.activeConnections[connectionId]
+        // Retrieve socketId from Redis using RedisService
+        const socketId = await this.redisService.getData(connectionId)
+        if (!socketId) {
+          return res.status(404).send('SocketId not found for the given connection_id')
+        }
         const sendUrl = req.body.meta.send
         const requestMimeType = req.headers['content-type'] as string
         const session = new SocketDockTransportSession(socketId, res, sendUrl, requestMimeType)
@@ -71,7 +84,8 @@ export class SocketDockInboundTransport implements InboundTransport {
         throw new Error('ConnectionId is not sent from socketDock server')
       }
 
-      delete this.activeConnections[connection_id]
+      // Remove connection from Redis using RedisService
+      await this.redisService.removeData(connection_id)      
       agent.config.logger.debug(`removed connection with socketId : ${connection_id}`)
       res.status(200).send(`connection with socketId : ${connection_id} removed successfully`)
     })
