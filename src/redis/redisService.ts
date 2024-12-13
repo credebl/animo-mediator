@@ -1,21 +1,16 @@
 import { createClient, RedisClientType } from 'redis'
-import { LOG_LEVEL, REDIS_URL } from '../constants'
-import { Logger } from 'src/logger'
+import { REDIS_URL } from '../constants'
 
 export class RedisService {
   private client: RedisClientType
-  private logger = new Logger(LOG_LEVEL)
 
   constructor() {
-    this.logger.info(`Initialize the Redis client`)
-    // Initialize the Redis client
     this.client = createClient({ url: REDIS_URL })
 
     // Connect to Redis
     this.client.connect().catch((err) => {
       console.error('Failed to connect to Redis:', err)
     })
-    this.logger.info(`Connected to Redis client`)
   }
 
   // Store a data

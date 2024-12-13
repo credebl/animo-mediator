@@ -4,14 +4,11 @@ import { SocketDockTransportSession } from './SocketDockTransportSession'
 import express from 'express'
 import createClient from 'redis'
 import { RedisService } from '../redis/redisService'
-import { Logger } from 'src/logger'
-import { LOG_LEVEL } from 'src/constants'
 
 export class SocketDockInboundTransport implements InboundTransport {
   private app: Express
   //private activeConnections: Record<string, string> = {}
   private redisService: RedisService
-  private logger = new Logger(LOG_LEVEL)
 
   public constructor({ app }: { app: Express }
   ) {
@@ -19,7 +16,6 @@ export class SocketDockInboundTransport implements InboundTransport {
 
     this.app.use(express.json())
     this.redisService = new RedisService();
-    this.logger.info(`RedisService initialized`)
   }
 
   public async start(agent: Agent) {
