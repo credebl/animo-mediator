@@ -42,7 +42,7 @@ function createModules() {
     }),
     mediator: new MediatorModule({
       autoAcceptMediationRequests: true,
-      messageForwardingStrategy: MessageForwardingStrategy.DirectDelivery,
+      messageForwardingStrategy: MessageForwardingStrategy.QueueAndLiveModeDelivery,
     }),
     askar: new AskarModule({
       ariesAskar,
